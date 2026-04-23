@@ -1,0 +1,34 @@
+{
+  "name": "healthos-egypt",
+  "version": "2.0.0",
+  "description": "HealthOS Egypt - نظام إدارة العيادات الطبية",
+  "type": "module",
+  "scripts": {
+    "start": "cd Backend/api-server && node server.js",
+    "dev": "cd Backend/api-server && node server.js",
+    "server": "cd Backend/api-server && node server.js",
+    "setup": "npm install",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "healthcare",
+    "clinic",
+    "medical",
+    "erp",
+    "hms",
+    "عيادة",
+    "نظام-طبي",
+    "صحة"
+  ],
+  "author": "HealthOS Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.0.0",
+    "mongoose": "^9.0.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

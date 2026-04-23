@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HealthOS Egypt - نظام إدارة العيادات</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div id="desktop">
+    <!-- SOS Button -->
+    <button class="sos-corner-btn" onclick="showSOS()">SOS<br/><small>طوارئ</small></button>
+
+    <!-- WINDOW: Dashboard -->
+    <div class="window" id="win-dashboard" style="top:40px;left:40px;width:560px">
+      <div class="window-titlebar" id="tb-dashboard">
+        <div class="window-controls">
+          <button class="wc wc-close" onclick="closeWin('dashboard')"></button>
+          <button class="wc wc-max" onclick="maxWin('dashboard')"></button>
+          <button class="wc wc-min" onclick="minWin('dashboard')"></button>
+        </div>
+        <span class="win-title">&#9689; <strong><i>HealthOs</i></strong></span>
+      </div>
+      <div class="window-body" id="body-dashboard">
+        <div class="stats-grid">
+          <!-- إجمالي المرضى - يعرض قائمة بجميع المرضى -->
+          <div class="stat-card blue" onclick="openDashboardExpanded('patients')">
+            <div class="stat-icon">&#128101;</div>
+            <div>
+              <div class="stat-num" id="s-patients">—</div>
+              <div class="stat-lbl">إجمالي المرضى</div>
+            </div>
+          </div>
+          <!-- الروشتات - يعرض قائمة بجميع الروشتات -->
+          <div class="stat-card green" onclick="openDashboardExpanded('rx')">
+            <div class="stat-icon">&#128138;</div>
+            <div>
+              <div class="stat-num" id="s-rx">—</div>
+              <div class="stat-lbl">الروشتات</div>
+            </div>
+          </div>
+          <!-- التحاليل - يعرض قائمة بجميع التحاليل -->
+          <div class="stat-card purple" onclick="openDashboardExpanded('labs')">
+            <div class="stat-icon">&#128300;</div>
+            <div>
+              <div class="stat-num" id="s-labs">—</div>
+              <div class="stat-lbl">التحاليل</div>
+            </div>
+          </div>
+          <!-- الزيارات - يعرض مرضى اليوم -->
+          <div class="stat-card orange" onclick="openDashboardExpanded('visits')">
+            <div class="stat-icon">&#128197;</div>
+            <div>
+              <div class="stat-num" id="s-visits">—</div>
+              <div class="stat-lbl">الزيارات</div>
+            </div>
+          </div>
+          <!-- مرضى هذا الأسبوع -->
+          <div class="stat-card teal" onclick="openDashboardExpanded('weekly')">
+            <div class="stat-icon">&#128100;</div>
+            <div>
+              <div class="stat-num" id="s-recent">—</div>
+              <div class="stat-lbl">مرضى هذا الأسبوع</div>
+            </div>
+          </div>
+          <!-- تحاليل غير طبيعية -->
+          <div class="stat-card red" onclick="openDashboardExpanded('abnormal')">
+            <div class="stat-icon">&#9888;</div>
+            <div>
+              <div class="stat-num" id="s-abnormal">—</div>
+              <div class="stat-lbl">تحاليل غير طبيعية</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- النص الاحترافي لرؤية المشروع -->
+        <p class="project-vision-text">
+          <strong><i>HealthOS Egypt</i></strong></br> نبتكر مستقبل الرعاية الصحية في مصر من خلال منصة رقمية متكاملة تمنح المواطن تحكمًا كاملاً في تاريخه الطبي عبر رقمه القومي، وتوفر للأطباء أدوات ذكية لإدارة بيانات المرضى بكفاءة غير مسبوقة. هدفنا بناء نظام صحي أكثر شفافية، سرعة، وأمانًا، يدعم اتخاذ القرارات العلاجية المستنيرة ويساهم في تحسين جودة الحياة.
+        </p>
+
+        <!-- Dashboard Expanded Sections -->
+        <!-- Patients List Expanded -->
+        <div id="dashboard-patients-expanded" class="stat-card-expanded hidden">
+          <div class="expanded-title">
+            <span>📋 قائمة المرضى</span>
+            <button class="close-expanded" onclick="closeDashboardExpanded('patients')">×</button>
+          </div>
+          <div id="dashboard-patients-list" class="dashboard-list"></div>
+        </div>
+
+        <!-- Labs List Expanded -->
+        <div id="dashboard-labs-expanded" class="stat-card-expanded hidden">
+          <div class="expanded-title">
+            <span>🔬 قائمة التحاليل</span>
+            <button class="close-expanded" onclick="closeDashboardExpanded('labs')">×</button>
+          </div>
+          <div id="dashboard-labs-list" class="dashboard-list"></div>
+        </div>
+
+        <!-- Weekly Patients Expanded -->
+        <div id="dashboard-weekly-expanded" class="stat-card-expanded hidden">
+          <div class="expanded-title">
+            <span>📅 مرضى هذا الأسبوع</span>
+            <button class="close-expanded" onclick="closeDashboardExpanded('weekly')">×</button>
+          </div>
+          <div id="dashboard-weekly-list" class="dashboard-list"></div>
+        </div>
+
+        <!-- Prescriptions Expanded -->
+        <div id="dashboard-rx-expanded" class="stat-card-expanded hidden">
+          <div class="expanded-title">
+            <span>💊 قائمة الروشتات</span>
+            <button class="close-expanded" onclick="closeDashboardExpanded('rx')">×</button>
+          </div>
+          <div id="dashboard-rx-list" class="dashboard-list"></div>
+        </div>
+
+        <!-- Today's Visits Expanded -->
+        <div id="dashboard-visits-expanded" class="stat-card-expanded hidden">
+          <div class="expanded-title">
+            <span>🩺 زيارات اليوم</span>
+            <button class="close-expanded" onclick="closeDashboardExpanded('visits')">×</button>
+          </div>
+          <div id="dashboard-visits-list" class="dashboard-list"></div>
+        </div>
+
+        <!-- Abnormal Labs Expanded -->
+        <div id="dashboard-abnormal-expanded" class="stat-card-expanded hidden">
+          <div class="expanded-title">
+            <span>⚠️ تحاليل غير طبيعية</span>
+            <button class="close-expanded" onclick="closeDashboardExpanded('abnormal')">×</button>
+          </div>
+          <div id="dashboard-abnormal-list" class="dashboard-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WINDOW: Patient Profile -->
+    <div class="window hidden" id="win-patient" style="top:40px;left:640px;width:530px">
+      <div class="window-titlebar" id="tb-patient">
+        <div class="window-controls">
+          <button class="wc wc-close" onclick="closeWin('patient')"></button>
+          <button class="wc wc-max" onclick="maxWin('patient')"></button>
+          <button class="wc wc-min" onclick="minWin('patient')"></button>
+        </div>
+        <span class="win-title">&#128101; ملف المريض</span>
+      </div>
+      <div class="window-body" id="body-patient">
+        <div class="form-row">
+          <label class="lbl">اختر المريض</label>
+          <select id="sel-patient" class="inp" onchange="selectPatient(this.value)">
+            <option value="">— اختر مريضاً —</option>
+          </select>
+        </div>
+        <div id="patient-card" class="hidden">
+          <div class="p-header">
+            <div class="p-avatar" id="p-avatar">م</div>
+            <div class="p-meta">
+              <div class="p-name" id="p-name"></div>
+              <div class="p-sub" id="p-nid"></div>
+              <div class="p-sub" id="p-dob"></div>
+            </div>
+            <div class="blood-badge" id="p-blood"></div>
+          </div>
+          <div class="p-section">
+            <div class="p-sec-title">الحساسية</div>
+            <div id="p-allergies" class="tags"></div>
+          </div>
+          <div class="p-section">
+            <div class="p-sec-title">الأمراض المزمنة</div>
+            <div id="p-chronic" class="tags"></div>
+          </div>
+          <div class="p-section">
+            <div class="p-sec-title">سجل الزيارات</div>
+            <div id="p-visits"></div>
+          </div>
+        </div>
+        <button class="btn-outline" style="margin-top:12px" onclick="toggleEl('add-patient-form')">+ إضافة مريض جديد</button>
+        <div id="add-patient-form" class="hidden sub-form">
+          <div class="form-row"><label class="lbl">الاسم الكامل</label><input id="np-name" class="inp"/></div>
+          <div class="form-row"><label class="lbl">الرقم القومي</label><input id="np-nid" class="inp"/></div>
+          <div class="form-row"><label class="lbl">تاريخ الميلاد</label><input id="np-dob" type="date" class="inp"/></div>
+          <div class="form-row">
+            <label class="lbl">الجنس</label>
+            <select id="np-gender" class="inp">
+              <option value="male">ذكر</option>
+              <option value="female">أنثى</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="lbl">فصيلة الدم</label>
+            <select id="np-blood" class="inp">
+              <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+            </select>
+          </div>
+          <div class="form-row"><label class="lbl">الهاتف</label><input id="np-phone" class="inp"/></div>
+          <div class="form-row"><label class="lbl">الحساسية (فصل بفاصلة)</label><input id="np-allergy" class="inp" placeholder="بنسلين, أسبرين"/></div>
+          <div class="form-row"><label class="lbl">أمراض مزمنة (فصل بفاصلة)</label><input id="np-chronic" class="inp" placeholder="سكري, ضغط"/></div>
+          <button class="btn-primary" onclick="addPatient()">حفظ المريض</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WINDOW: Prescriptions -->
+    <div class="window hidden" id="win-prescriptions" style="top:420px;left:40px;width:545px">
+      <div class="window-titlebar" id="tb-prescriptions">
+        <div class="window-controls">
+          <button class="wc wc-close" onclick="closeWin('prescriptions')"></button>
+          <button class="wc wc-max" onclick="maxWin('prescriptions')"></button>
+          <button class="wc wc-min" onclick="minWin('prescriptions')"></button>
+        </div>
+        <span class="win-title">&#128138; الروشتات</span>
+      </div>
+      <div class="window-body" id="body-prescriptions">
+        <div id="rx-list"></div>
+        <div id="rx-alert" class="hidden alert-warn">&#9888; <span id="rx-alert-msg"></span></div>
+        <div class="sep">إصدار روشتة جديدة</div>
+        <div class="form-row">
+          <label class="lbl">المريض</label>
+          <select id="rx-patient" class="inp"><option value="">— اختر مريضاً —</option></select>
+        </div>
+        <div class="form-row">
+          <label class="lbl">الطبيب</label>
+          <input id="rx-doctor" class="inp" value="د. سمير محمود"/>
+        </div>
+        <div id="rx-meds">
+          <div class="med-header">
+            <span>الدواء</span><span>الجرعة</span><span>التكرار</span><span>أيام</span>
+          </div>
+          <div class="med-row">
+            <input class="inp mn" placeholder="اسم الدواء"/>
+            <input class="inp md" placeholder="500mg"/>
+            <input class="inp mf" placeholder="مرتين يومياً"/>
+            <input class="inp my" type="number" value="30"/>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn-outline" onclick="addMedRow()">+ دواء آخر</button>
+          <button class="btn-primary" onclick="issuePrescription()">إصدار الروشتة</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WINDOW: Lab Results -->
+    <div class="window hidden" id="win-labs" style="top:420px;left:625px;width:520px">
+      <div class="window-titlebar" id="tb-labs">
+        <div class="window-controls">
+          <button class="wc wc-close" onclick="closeWin('labs')"></button>
+          <button class="wc wc-max" onclick="maxWin('labs')"></button>
+          <button class="wc wc-min" onclick="minWin('labs')"></button>
+        </div>
+        <span class="win-title">&#128300; مخزن الإشاعات والتحاليل</span>
+      </div>
+      <div class="window-body" id="body-labs">
+        <div class="form-row">
+          <label class="lbl">تصفية حسب المريض</label>
+          <select id="lab-filter" class="inp" onchange="loadLabs()"><option value="">— جميع المرضى —</option></select>
+        </div>
+        <div id="lab-list"></div>
+        <div class="sep">رفع نتيجة جديدة</div>
+        <div class="form-row"><label class="lbl">المريض</label><select id="lab-patient" class="inp"><option value="">— اختر —</option></select></div>
+        <div class="form-row"><label class="lbl">اسم التقرير</label><input id="lab-name" class="inp" placeholder="مثال: تحليل HbA1c"/></div>
+        <div class="form-row">
+          <label class="lbl">النوع</label>
+          <select id="lab-type" class="inp">
+            <option value="blood">تحليل دم</option>
+            <option value="urine">تحليل بول</option>
+            <option value="radiology">أشعة</option>
+            <option value="mri">رنين مغناطيسي</option>
+            <option value="xray">أشعة سينية</option>
+            <option value="ultrasound">موجات صوتية</option>
+            <option value="other">أخرى</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="lbl">الحالة</label>
+          <select id="lab-status" class="inp">
+            <option value="normal">طبيعي</option>
+            <option value="abnormal">غير طبيعي</option>
+            <option value="pending">قيد الانتظار</option>
+          </select>
+        </div>
+        <div class="form-row"><label class="lbl">التاريخ</label><input id="lab-date" class="inp" type="date"/></div>
+        <button class="btn-primary" onclick="uploadLab()">رفع النتيجة</button>
+      </div>
+    </div>
+
+    <!-- WINDOW: Vital Signs -->
+    <div class="window hidden" id="win-vitals" style="top:40px;left:1210px;width:560px">
+      <div class="window-titlebar" id="tb-vitals">
+        <div class="window-controls">
+          <button class="wc wc-close" onclick="closeWin('vitals')"></button>
+          <button class="wc wc-max" onclick="maxWin('vitals')"></button>
+          <button class="wc wc-min" onclick="minWin('vitals')"></button>
+        </div>
+        <span class="win-title">&#128202; تتبع العلامات الحيوية</span>
+      </div>
+      <div class="window-body" id="body-vitals">
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <select id="vp-patient" class="inp" style="flex:1" onchange="loadVitals()">
+            <option value="">— اختر مريضاً —</option>
+          </select>
+          <select id="vp-period" class="inp" style="width:120px" onchange="loadVitals()">
+            <option value="monthly">شهري</option>
+            <option value="weekly">أسبوعي</option>
+            <option value="daily">يومي</option>
+          </select>
+        </div>
+        <div class="chart-wrap"><canvas id="vitals-chart"></canvas></div>
+        <div class="legend">
+          <span class="ldot" style="background:#1A73E8"></span>ضغط انقباضي
+          <span class="ldot" style="background:#34A853;margin-right:10px"></span>نبض القلب
+          <span class="ldot" style="background:#FBBC04;margin-right:10px"></span>سكر الدم
+        </div>
+      </div>
+    </div>
+
+    <!-- WINDOW: Activity -->
+    <div class="window hidden" id="win-activity" style="top:320px;left:1210px;width:350px">
+      <div class="window-titlebar" id="tb-activity">
+        <div class="window-controls">
+          <button class="wc wc-close" onclick="closeWin('activity')"></button>
+          <button class="wc wc-max" onclick="maxWin('activity')"></button>
+          <button class="wc wc-min" onclick="minWin('activity')"></button>
+        </div>
+        <span class="win-title">&#9733; النشاط الأخير</span>
+      </div>
+      <div class="window-body" id="body-activity">
+        <div id="activity-list">
+          <div style="color:var(--sub);font-size:12px;text-align:center;padding:20px">جاري التحميل...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASKBAR -->
+    <div id="taskbar">
+      <div class="tb-apps">
+        <button class="tb-btn" onclick="openWin('dashboard', true)" title="لوحة التحكم">&#9689;</button>
+        <button class="tb-btn" onclick="openWin('patient', true)" title="ملف المريض">&#128101;</button>
+        <button class="tb-btn" onclick="openWin('prescriptions', true)" title="الروشتات">&#128138;</button>
+        <button class="tb-btn" onclick="openWin('labs', true)" title="التحاليل">&#128300;</button>
+        <button class="tb-btn" onclick="openWin('vitals', true)" title="العلامات الحيوية">&#128202;</button>
+        <button class="tb-btn" onclick="openWin('activity', true)" title="النشاط">&#9733;</button>
+        <button class="sos-tb" onclick="showSOS()">SOS<br/><small>طوارئ</small></button>
+      </div>
+      <div class="tb-clock">
+        <div id="tb-time">--:--</div>
+        <div id="tb-date" style="font-size:10px;font-weight:400;opacity:.8">---</div>
+      </div>
+    </div>
+
+    <!-- SOS Modal -->
+    <div id="sos-overlay" class="overlay hidden" onclick="if(event.target===this)closeSOS()">
+      <div class="sos-box" onclick="event.stopPropagation()">
+        <div class="sos-title">&#9888; معلومات الطوارئ</div>
+        <div class="form-row">
+          <select id="sos-sel" class="inp" onchange="renderSOS()">
+            <option value="">— اختر مريضاً —</option>
+          </select>
+        </div>
+        <div id="sos-info"></div>
+        <button class="btn-primary" style="width:100%;margin-top:16px;background:var(--red)" onclick="closeSOS()">إغلاق</button>
+      </div>
+    </div>
+
+    <!-- Patient Detail Modal -->
+    <div id="patient-detail-modal" class="patient-detail-modal hidden" onclick="if(event.target===this)closePatientDetailModal()">
+      <div class="patient-detail-box" onclick="event.stopPropagation()">
+        <div class="patient-detail-header">
+          <div class="patient-detail-title" id="modal-patient-title">معلومات المريض</div>
+          <button class="patient-detail-close" onclick="closePatientDetailModal()">×</button>
+        </div>
+        <div id="modal-patient-content">
+          <!-- Content will be loaded dynamically -->
+        </div>
+        <div class="action-buttons">
+          <button class="btn-edit" onclick="editPatientFromModal()">✏️ تعديل</button>
+          <button class="btn-export" onclick="exportPatientPDF()">📄 تصدير PDF</button>
+          <button class="btn-delete" onclick="deletePatientFromModal()">🗑️ حذف</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lab Detail Modal -->
+    <div id="lab-detail-modal" class="patient-detail-modal hidden" onclick="if(event.target===this)closeLabDetailModal()">
+      <div class="patient-detail-box" onclick="event.stopPropagation()">
+        <div class="patient-detail-header">
+          <div class="patient-detail-title" id="modal-lab-title">تفاصيل التحليل</div>
+          <button class="patient-detail-close" onclick="closeLabDetailModal()">×</button>
+        </div>
+        <div id="modal-lab-content">
+          <!-- Content will be loaded dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Prescription Detail Modal -->
+    <div id="rx-detail-modal" class="patient-detail-modal hidden" onclick="if(event.target===this)closeRxDetailModal()">
+      <div class="patient-detail-box" onclick="event.stopPropagation()">
+        <div class="patient-detail-header">
+          <div class="patient-detail-title" id="modal-rx-title">تفاصيل الروشتة</div>
+          <button class="patient-detail-close" onclick="closeRxDetailModal()">×</button>
+        </div>
+        <div id="modal-rx-content">
+          <!-- Content will be loaded dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Patient Modal -->
+    <div id="edit-patient-modal" class="patient-detail-modal hidden" onclick="if(event.target===this)closeEditPatientModal()">
+      <div class="patient-detail-box" onclick="event.stopPropagation()">
+        <div class="patient-detail-header">
+          <div class="patient-detail-title">تعديل بيانات المريض</div>
+          <button class="patient-detail-close" onclick="closeEditPatientModal()">×</button>
+        </div>
+        <div id="edit-patient-form-content">
+          <input type="hidden" id="edit-patient-id">
+          <div class="form-row"><label class="lbl">الاسم الكامل</label><input id="edit-p-name" class="inp"/></div>
+          <div class="form-row"><label class="lbl">الرقم القومي</label><input id="edit-p-nid" class="inp"/></div>
+          <div class="form-row"><label class="lbl">تاريخ الميلاد</label><input id="edit-p-dob" type="date" class="inp"/></div>
+          <div class="form-row">
+            <label class="lbl">الجنس</label>
+            <select id="edit-p-gender" class="inp">
+              <option value="male">ذكر</option>
+              <option value="female">أنثى</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="lbl">فصيلة الدم</label>
+            <select id="edit-p-blood" class="inp">
+              <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+            </select>
+          </div>
+          <div class="form-row"><label class="lbl">الهاتف</label><input id="edit-p-phone" class="inp"/></div>
+          <div class="form-row"><label class="lbl">الحساسية (فصل بفاصلة)</label><input id="edit-p-allergy" class="inp"/></div>
+          <div class="form-row"><label class="lbl">أمراض مزمنة (فصل بفاصلة)</label><input id="edit-p-chronic" class="inp"/></div>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-primary" onclick="saveEditPatient()" style="flex:1">💾 حفظ التغييرات</button>
+          <button class="btn-outline" onclick="closeEditPatientModal()" style="flex:1">إلغاء</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Lab Modal -->
+    <div id="edit-lab-modal" class="patient-detail-modal hidden" onclick="if(event.target===this)closeEditLabModal()">
+      <div class="patient-detail-box" onclick="event.stopPropagation()">
+        <div class="patient-detail-header">
+          <div class="patient-detail-title">تعديل بيانات التحليل</div>
+          <button class="patient-detail-close" onclick="closeEditLabModal()">×</button>
+        </div>
+        <div id="edit-lab-form-content">
+          <input type="hidden" id="edit-lab-id">
+          <div class="form-row"><label class="lbl">اسم التحليل</label><input id="edit-lab-name" class="inp"/></div>
+          <div class="form-row">
+            <label class="lbl">النوع</label>
+            <select id="edit-lab-type" class="inp">
+              <option value="blood">تحليل دم</option>
+              <option value="urine">تحليل بول</option>
+              <option value="radiology">أشعة</option>
+              <option value="mri">رنين مغناطيسي</option>
+              <option value="xray">أشعة سينية</option>
+              <option value="ultrasound">موجات صوتية</option>
+              <option value="other">أخرى</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="lbl">الحالة</label>
+            <select id="edit-lab-status" class="inp">
+              <option value="normal">طبيعي</option>
+              <option value="abnormal">غير طبيعي</option>
+              <option value="pending">قيد الانتظار</option>
+            </select>
+          </div>
+          <div class="form-row"><label class="lbl">تاريخ التحليل</label><input id="edit-lab-date" class="inp" type="date"/></div>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-primary" onclick="saveEditLab()" style="flex:1">💾 حفظ التغييرات</button>
+          <button class="btn-outline" onclick="closeEditLabModal()" style="flex:1">إلغاء</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast hidden"></div>
+  </div>
+
+  <script src="./app.js"></script>
+  <script>
+    // الدوال المساعدة في إدارة النوافذ، لضمان أنها متوفرة عند التحميل
+    // (لو كانت موجودة في app.js بالفعل، ممكن تشيل التكرار ده)
+    // function openWin(id, maximize = false) { ... }
+    // function getNextZIndex() { ... }
+
+    // عند تحميل الصفحة، افتح الـ Dashboard واجعلها في وضع الشاشة الكاملة
+    window.onload = function() {
+      // تأكد أن app.js تم تحميله وأن وظائفها جاهزة
+      // استدعاء openWin('dashboard', true) سيتم في DOMContentLoaded في app.js الآن
+      // فقط لتحديث الساعة هنا إذا لم يتم ذلك في app.js بشكل تلقائي
+      // updateClock(); // هذه الدالة يتم استدعاؤها في startClock() في app.js
+      // setInterval(updateClock, 1000); // وهذه الدالة أيضاً في startClock()
+      
+      // لا نحتاج لـ openWin هنا لأنها تمت في app.js -> DOMContentLoaded
+    };
+  </script>
+</body>
+</html>

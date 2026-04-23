@@ -1,0 +1,23 @@
+✅ Connected to MongoDB
+🚀 HealthOS Server running on http://localhost:8080
+[2026-04-18T09:05:19.511Z] GET /api/healthz
+[2026-04-18T09:16:19.016Z] GET /api/patients?limit=100
+[2026-04-18T09:16:19.053Z] GET /api/dashboard/summary
+[2026-04-18T09:16:19.068Z] GET /api/dashboard/activity?limit=15
+[2026-04-18T09:16:19.086Z] GET /api/prescriptions?limit=10
+[2026-04-18T09:16:19.099Z] GET /api/lab-results?limit=20
+[2026-04-18T09:16:19.221Z] GET /favicon.ico
+[2026-04-18T09:18:45.064Z] GET /api/patients?limit=100
+[2026-04-18T09:18:45.197Z] GET /api/dashboard/summary
+[2026-04-18T09:18:45.209Z] GET /api/dashboard/activity?limit=15
+[2026-04-18T09:18:45.218Z] GET /api/prescriptions?limit=10
+[2026-04-18T09:18:45.230Z] GET /api/lab-results?limit=20
+[2026-04-18T09:18:45.257Z] GET /api/visits?patientId=69e34c655d0f0238e3926c04&limit=5
+[2026-04-18T09:18:45.270Z] GET /api/vital-signs?patientId=69e34c655d0f0238e3926c04&period=monthly&limit=30
+[2026-04-18T09:20:01.591Z] GET /api/patients?limit=100
+[2026-04-18T09:20:01.655Z] GET /api/dashboard/summary
+[2026-04-18T09:20:01.671Z] GET /api/dashboard/activity?limit=15
+[2026-04-18T09:20:01.677Z] GET /api/prescriptions?limit=10
+[2026-04-18T09:20:01.689Z] GET /api/lab-results?limit=20
+[2026-04-18T09:20:01.714Z] GET /api/visits?patientId=69e34cb8846c509af17a052b&limit=5
+[2026-04-18T09:20:01.719Z] GET /api/vital-signs?patientId=69e34cb8846c509af17a052b&period=monthly&limit=30
